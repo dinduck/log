@@ -4,18 +4,30 @@
     "type": "split",
     "children": [
       {
-        "id": "bfda0cc5f3a844ea",
+        "id": "20fe405200e9d443",
         "type": "tabs",
         "children": [
           {
-            "id": "e12eece9ea70e571",
+            "id": "bf7597871dd23484",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "rcore/ch1 裸机 启动！！！.md",
+                "mode": "source",
+                "source": false
+              }
+            }
+          },
+          {
+            "id": "55810d5fbb0807de",
             "type": "leaf",
             "state": {
               "type": "markdown",
               "state": {
                 "file": "rcore/汇编程序设计.md",
                 "mode": "source",
-                "source": true
+                "source": false
               }
             }
           }
@@ -85,7 +97,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "rcore/汇编程序设计.md",
+                "file": "rcore/ch1 裸机 启动！！！.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -102,7 +114,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "rcore/汇编程序设计.md",
+                "file": "rcore/ch1 裸机 启动！！！.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -125,7 +137,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "rcore/汇编程序设计.md"
+                "file": "rcore/ch1 裸机 启动！！！.md"
               }
             }
           }
@@ -134,7 +146,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 300
+    "width": 200
   },
   "left-ribbon": {
     "hiddenItems": {
@@ -146,12 +158,25 @@
       "command-palette:打开命令面板": false
     }
   },
-  "active": "e12eece9ea70e571",
+  "active": "bf7597871dd23484",
   "lastOpenFiles": [
+    "task/os/target/riscv64gc-unknown-none-elf/release/os.bin",
+    "task/os/target/riscv64gc-unknown-none-elf/release/os.d",
+    "task/os/target/riscv64gc-unknown-none-elf/release/os",
+    "task/os/target/riscv64gc-unknown-none-elf/release/deps/os-90d57b247416f697",
+    "task/os/target/riscv64gc-unknown-none-elf/release/deps/os-90d57b247416f697.os.ae01371ba5595d8f-cgu.0.rcgu.o",
+    "task/os/target/riscv64gc-unknown-none-elf/release/deps/os-90d57b247416f697.d",
+    "task/os/target/riscv64gc-unknown-none-elf/release/incremental",
+    "task/os/target/riscv64gc-unknown-none-elf/release/examples",
+    "task/os/target/riscv64gc-unknown-none-elf/release/deps",
+    "task/os/target/riscv64gc-unknown-none-elf/release/build",
+    "task/os/target/riscv64gc-unknown-none-elf/release",
+    "rcore/C语言是怎么进入 `main` 的.md",
+    "rcore/ch1 裸机 启动！！！.md",
     "rcore/函数的调用.md",
     "rcore/汇编程序设计.md",
+    "指令集.md",
     "README.md",
-    "().md",
-    "rcore"
+    "().md"
   ]
 }
