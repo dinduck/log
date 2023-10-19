@@ -331,3 +331,5 @@ rvvm ../bootloader/rustsbi-qemu.bin -m 256M -k target/riscv64gc-unknown-none-elf
 你可以添加 `-nogui` 选项， 唯一缺点， 不可调试
 
 ![image.png](https://s2.loli.net/2023/10/20/LpXytvA54WOgaEQ.png)
+
+。。。会增加一段 `Makefile`  的编写
