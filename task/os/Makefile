@@ -21,7 +21,25 @@ endif
 # 内核入口
 KERNEL_ENTRY_PA := 0x80200000
 
+# 用于反汇编
+OBJDUMP := rust-objdump --arch-name=riscv64
+# 用于获取二进制文件
+OBJCOPY := rust-objcopy --binary-architecture=riscv64
 
+# 构建
+build: $(KERNEL_BIN)
+
+
+$(KERNEL_BIN): kernel
+	@$(OBJCOPY) $(KERNEL_ELF) --strip-all -O binary $@
+
+
+kernel:
+	@cargo build $(MODE_ARG)
+
+
+clean:
+	@cargo clean
 
 
 # qemu 参数
@@ -32,5 +50,15 @@ QEMU_ARGS := -machine virt \
 			 -device loader,file=$(KERNEL_BIN),addr=$(KERNEL_ENTRY_PA)
 
 # 开启 qemu
-run-inner:
-	@kitty -e qemu-system-riscv64 --nographic -bios $(BOOTLOADER) &
+run-inner: build
+	@kitty -e qemu-system-riscv64 $(QEMU_ARGS) &
+
+# RVVM 运行
+rvvm: build
+	@rvvm ../bootloader/rustsbi-qemu.bin -m 256M -k target/riscv64gc-unknown-none-elf/release/os.bin
+
+# 调试
+debug: build
+	@kitty -e qemu-system-riscv64 $(QEMU_ARGS) -s -S &
+	@riscv64-elf-gdb -ex 'file $(KERNEL_ELF)' -ex 'set arch riscv:rv64' -ex 'target remote :1234' -ex 'layout next' -ex 'layout reg'
+
