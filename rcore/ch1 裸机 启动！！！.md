@@ -47,7 +47,7 @@ rustup update
 由于调试
 
 ```Bash
-sudo pacman -S ## riscv64-elf-gdb\
+sudo pacman -S riscv64-elf-gdb\
 # 全套工具链一把锉
 # sudo pacman -S riscv64-elf-binutils
 ```
@@ -180,8 +180,8 @@ warning: `os` (bin "os") generated 1 warning
 _start:
   li x1, 100
 ```
-这段代码非常简单的， 我们定义段 `.text.entry` 具有一个全局标签 `_start`
-`_start` 标签下的代码段， 同时标签也代表代码的起点
+这段代码非常简单的， 我们定义段 `.text.entry` 具有一个全局符号 `_start`
+`_start` 符号表示代码段 `_start`的开始
 `li x1, 100` 将立即数 `100` 加载至 `x1` 寄存器
 
 接下来将我们的汇编代码嵌入程序
@@ -267,7 +267,7 @@ output = {input rule}
 
 `ALIGN(4)` 以 4 字节对其边界
 
-关于段的知识， 你需要了解 [[汇编程序设计]] 和 [ELF文件解析](https://gdufs-king.github.io/2020/10/21/ELF%E6%96%87%E4%BB%B6%E7%BB%93%E6%9E%84%E8%A7%A3%E6%9E%90/) 也可选择自行查阅， 这里有一篇比较好的 [PDF](https://paper.seebug.org/papers/Archive/refs/elf/Understanding_ELF.pdf)关于 ELF
+关于段的知识， 你需要了解 [[汇编程序设计]] 和 [ELF文件解析](https://gdufs-king.github.io/2020/10/21/ELF%E6%96%87%E4%BB%B6%E7%BB%93%E6%9E%84%E8%A7%A3%E6%9E%90/) 也可选择自行查阅， 这里有一篇比较好的 [PDF](https://paper.seebug.org/papers/Archive/refs/elf/Understanding_ELF.pdf) 关于 ELF
 这里引用 `rcore tutorial` 的图
 ![image.png](https://s2.loli.net/2023/10/19/E2dUfB4YHKvmiGb.png)
 
@@ -330,6 +330,82 @@ rvvm ../bootloader/rustsbi-qemu.bin -m 256M -k target/riscv64gc-unknown-none-elf
 ```
 你可以添加 `-nogui` 选项， 唯一缺点， 不可调试
 
-![image.png](https://s2.loli.net/2023/10/20/LpXytvA54WOgaEQ.png)
+![](https://s2.loli.net/2023/10/20/LpXytvA54WOgaEQ.png)
 
-。。。会增加一段 `Makefile`  的编写
+
+## Simple `Makefile`
+
+现在我们有了常用指令
+
+
+现在完善 `Makefile`
+```Makefile
+# 编译模式
+MODE := release
+
+# Bootloader
+BOOTLOADER := ../bootloader/rustsbi-qemu.bin
+
+# 目标平台
+TARGET := riscv64gc-unknown-none-elf
+
+# 内核的可执行文件 但是存在大量元数据， 方便调试
+KERNEL_ELF := ./target/riscv64gc-unknown-none-elf/$(MODE)/os
+
+# 内核文件， 去除了元数据
+KERNEL_BIN := $(KERNEL_ELF).bin
+
+# 设置编译参数
+ifeq ($(MODE), release)
+	MODE_ARG := --release
+endif
+
+# 内核入口
+KERNEL_ENTRY_PA := 0x80200000
+
+# 用于反汇编
+OBJDUMP := rust-objdump --arch-name=riscv64
+# 用于获取二进制文件
+OBJCOPY := rust-objcopy --binary-architecture=riscv64
+
+# 构建
+build: $(KERNEL_BIN)
+
+
+$(KERNEL_BIN): kernel
+	@$(OBJCOPY) $(KERNEL_ELF) --strip-all -O binary $@
+
+
+kernel:
+	@cargo build $(MODE_ARG)
+
+
+clean:
+	@cargo clean
+
+
+# qemu 参数
+# 没有图像
+QEMU_ARGS := -machine virt \
+			-nographic \
+			-bios $(BOOTLOADER) \
+			-device loader,file=$(KERNEL_BIN),addr=$(KERNEL_ENTRY_PA)
+
+# 开启 qemu
+run-inner: build
+	@kitty -e qemu-system-riscv64 $(QEMU_ARGS) &
+
+# RVVM 运行
+rvvm: build
+	@rvvm ../bootloader/rustsbi-qemu.bin -m 256M -k target/riscv64gc-unknown-none-elf/release/os.bin
+
+# 调试
+debug: build
+	@kitty -e qemu-system-riscv64 $(QEMU_ARGS) -s -S &
+	@riscv64-elf-gdb -ex 'file $(KERNEL_ELF)' -ex 'set arch riscv:rv64' -ex 'target remote :1234' -ex 'layout next' -ex 'layout reg'
+
+```
+
+
+使用 `make debug` 可快速开启调试， 注意默认终端为 `kitty`, 
+`make rvvm` 可使用 `rvvm` 运行
